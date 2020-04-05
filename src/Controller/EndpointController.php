@@ -62,11 +62,23 @@ class EndpointController extends AbstractController
     {
         return $this->json(
             [
-                'status' => 1,
+                'status' => 0,
+                'services' => [
+                    'rng' => [
+                        'status' => 0
+                    ],
+                    'core' => [
+                        'status' => 0
+                    ],
+                    'data-store' => [
+                        'status' => 0
+                    ],
+                ]
             ],
             200,
             [
-                'LM-COMPONENT-HASH' => md5('dice-engine')
+                'LM-COMPONENT-HASH' => md5('dice-engine'),
+                'Content-Type' => 'application/json'
             ]
         );
     }

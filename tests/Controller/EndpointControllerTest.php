@@ -41,7 +41,7 @@ class EndpointControllerTest extends WebTestCase
     }
 
     /**
-     * Test for HTTP action `http://localhost:10001/index.php/run`.
+     * Test for HTTP action `http://localhost:10001/run`.
      * Checking:
      * - route is available,
      * - route is available only for POST method,
@@ -60,20 +60,22 @@ class EndpointControllerTest extends WebTestCase
         // Check that response status code is expected
         $this->assertEquals($testCase['statusCode'], $this->client->getResponse()->getStatusCode());
 
-        // Check that response content type is application/json
-        $this->assertTrue(
-            $this->client->getResponse()->headers->contains(
-                'Content-Type',
-                'application/json'
-            ),
-            'the "Content-Type" header is "application/json"'
-        );
+        if (200 === $testCase['statusCode']) {
+            // Check that response content type is application/json
+            $this->assertTrue(
+                $this->client->getResponse()->headers->contains(
+                    'Content-Type',
+                    'application/json'
+                ),
+                'the "Content-Type" header is "application/json"'
+            );
 
-        // Check that headers contains valid network component hash
-        $this->assertEquals(
-            $testCase['componentHash'],
-            $this->client->getResponse()->headers->get('LM-COMPONENT-HASH')
-        );
+            // Check that headers contains valid network component hash
+            $this->assertEquals(
+                $testCase['componentHash'],
+                $this->client->getResponse()->headers->get('LM-COMPONENT-HASH')
+            );
+        }
     }
 
     /**
@@ -106,7 +108,7 @@ class EndpointControllerTest extends WebTestCase
     }
 
     /**
-     * Test for HTTP action `http://localhost:10001/index.php/endpoint/status`.
+     * Test for HTTP action `http://localhost:10001/status`.
      * Checking:
      * - route is available,
      * - route is available only for GET method,
@@ -126,29 +128,28 @@ class EndpointControllerTest extends WebTestCase
         // Check that response status code is expected
         $this->assertEquals($testCase['statusCode'], $this->client->getResponse()->getStatusCode());
 
-        // Check that response content type is application/json
-        $this->assertEquals(
-            'application/json',
-            $this->client->getResponse()->headers->get('Content-Type')
-        );
+        if (200 === $testCase['statusCode']) {
+            // Check that response content type is application/json
+            $this->assertTrue(
+                $this->client->getResponse()->headers->contains(
+                    'Content-Type',
+                    'application/json'
+                ),
+                'the "Content-Type" header is "application/json"'
+            );
 
-        // Check that headers contains valid network component hash
-        $this->assertEquals(
-            $testCase['componentHash'],
-            $this->client->getResponse()->headers->get('LM-COMPONENT-HASH')
-        );
+            // Check that headers contains valid network component hash
+            $this->assertEquals(
+                $testCase['componentHash'],
+                $this->client->getResponse()->headers->get('LM-COMPONENT-HASH')
+            );
 
-        // Check that response content contains key status
-        $this->assertArrayHasKey(
-            'status',
-            json_encode($this->client->getResponse()->getContent(), true)
-        );
-
-        // Check that response content contains key services
-        $this->assertArrayHasKey(
-            'services',
-            json_encode($this->client->getResponse()->getContent(), true)
-        );
+            // Check that response is the same as expected
+            $this->assertEquals(
+                    json_encode($testCase['response']),
+                    $this->client->getResponse()->getContent()
+            );
+        }
     }
 
     /**
@@ -165,8 +166,22 @@ class EndpointControllerTest extends WebTestCase
         ]];
         yield [[
             'method' => 'GET',
-            'statusCode' => '200',
-            'componentHash' => md5('dice-engine')
+            'statusCode' => 200,
+            'componentHash' => md5('dice-engine'),
+            'response' => [
+                'status' => 0,
+                'services' => [
+                    'rng' => [
+                        'status' => 0
+                    ],
+                    'core' => [
+                        'status' => 0
+                    ],
+                    'data-store' => [
+                        'status' => 0
+                    ],
+                ]
+            ]
         ]];
         yield [[
             'method' => 'PUT',
