@@ -1,29 +1,14 @@
 <?php
-/**
- * LoteriomaDiceEngine - application enabling the operation of gambling cubes.
- *
- * The application consists of a dice game engine based on a pseudo-randomity for which
- * the external RNG component is used. The application is only responsible for handling
- * the game logic and forwards its results to the Core component. Data used in the operation
- * of the application are downloaded from the DataStore component.
- *
- * See more: https://raspberryvision.github.io/loterioma-dice-engine/.
- *
- * DiceEngine - casino dice game server.
- * @see https://github.com/RaspberryVision/loterioma-dice-engine
- *
- * This code is part of the LoterioMa casino system.
- * @see https://github.com/RaspberryVision/loterioma
- *
- * Created by Rafal Malik.
- * 15:47 02.04.2020, Warsaw/Zabki - DELL
- */
 
 namespace App\Engine;
 
 use App\Engine\Utils\BetChecker;
+use App\Model\Bet;
 use App\Model\Game;
 use App\Model\GameRequest;
+use App\Model\Network\NetworkResponseInterface;
+use App\Model\Round;
+use App\Model\RoundResult;
 use App\NetworkHelper\Core\CoreHelper;
 use App\NetworkHelper\DataStore\DataStoreHelper;
 use App\NetworkHelper\RNG\RNGHelper;
@@ -42,12 +27,12 @@ class DiceEngine
     /**
      * @var Game|object $game
      */
-    private Object $game;
+    private object $game;
 
     /**
      * @var GameRequest|object $request
      */
-    private Object $request;
+    private object $request;
 
     /**
      * @var RNGHelper $RNGHelper
@@ -65,14 +50,15 @@ class DiceEngine
     private DataStoreHelper $dataStoreHelper;
 
     /**
-     * @var BetChecker $betChecker
-     */
-    private BetChecker $betChecker;
-
-    /**
      * @var SerializerInterface $serializer
      */
     private SerializerInterface $serializer;
+
+    /**
+     * Current round object.
+     * @var Round|null $currentRound
+     */
+    private ?Round $currentRound;
 
     /**
      * DiceEngine constructor.
@@ -90,9 +76,12 @@ class DiceEngine
         $this->RNGHelper = $RNGhelper;
         $this->coreHelper = $coreHelper;
         $this->dataStoreHelper = $dataStoreHelper;
-        $this->betChecker = new BetChecker();
     }
 
+    /**
+     * @param string $requestContent
+     * @return bool
+     */
     public function handleRequest(string $requestContent): bool
     {
         try {
@@ -105,18 +94,34 @@ class DiceEngine
 
     /**
      * The function that supports the game logic is called when the game is drawn (the game takes place).
+     * @throws \JsonException
      */
     public function run(): bool
     {
+        $this->currentRound = new Round(
+            $this->game,
+            $this->request->getParameters(),
+            new RoundResult($this->drawMatrix()),
+        );
+
+        /** Load bets to round object */
+        $this->loadBets();
+
+        /** Checking winning bets */
+        $this->checkBets();
+
+        /** Save round object in DataStore component */
+        $this->dispatchRound();
+
         return true;
     }
 
     /**
      * A method that returns the result of a round.
      */
-    public function getResult()
+    public function getResult(): ?RoundResult
     {
-        return 'resukt';
+        return $this->currentRound->getResult();
     }
 
     /**
@@ -126,7 +131,7 @@ class DiceEngine
      */
     public function loadGame(): bool
     {
-        $this->game =  $this->serializer->deserialize(
+        $this->game = $this->serializer->deserialize(
             $this->dataStoreHelper->fetchGame($this->request->getGameId())->getBody(),
             Game::class,
             'json'
@@ -137,5 +142,50 @@ class DiceEngine
         }
 
         return true;
+    }
+
+    /**
+     * @return array|string|null
+     * @throws \JsonException
+     */
+    private function drawMatrix()
+    {
+        return json_decode($this->RNGHelper->throwDice(
+            $this->serializer->serialize($this->game->getGeneratorConfig(), 'json')
+        )->getBody(), true, 512, JSON_THROW_ON_ERROR);
+    }
+
+    /**
+     * @return NetworkResponseInterface
+     */
+    private function dispatchRound(): NetworkResponseInterface
+    {
+        return $this->coreHelper->processRound($this->serializer->serialize($this->currentRound, 'json'));
+    }
+
+    /**
+     * Load bets from array to Round as Bet object.
+     */
+    private function loadBets(): void
+    {
+        if (!$this->currentRound || !isset($this->request->getParameters()['bets'])) {
+            return;
+        }
+
+        foreach ($this->request->getParameters()['bets'] as $item) {
+            $this->currentRound->addBet(new Bet(
+                $item['stake'],
+                $item['number'],
+                $this->request->getUserId()
+            ));
+        }
+    }
+
+    /**
+     * The firing method of coupon verification for victory.
+     */
+    private function checkBets(): void
+    {
+        (new BetChecker())->process($this->currentRound);
     }
 }
