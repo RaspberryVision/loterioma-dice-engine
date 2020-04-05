@@ -21,10 +21,13 @@
 
 namespace App\Controller;
 
+use App\Engine\DiceEngine;
+use App\Model\GameRequest;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Serializer\SerializerInterface;
 
 /**
  * The controller being the application access point for HTTP requests.
@@ -38,14 +41,37 @@ class EndpointController extends AbstractController
     /**
      * @Route("/run", name="web_endpoint_run", methods={"POST"})
      * @param Request $request
+     * @param DiceEngine $engine
      * @return JsonResponse
      */
-    public function run(Request $request): JsonResponse
+    public function run(Request $request, DiceEngine $engine): JsonResponse
     {
+
+        if ($engine->handleRequest($request->getContent())) {
+
+            $engine->loadGame();
+
+            $engine->run();
+
+            return $this->json($engine->getResult());
+        }
+
+        return $this->json(['elo']);
+
+
+        /** Dice engine instance with GameRequest object as parameter */
+//        $engine = new DiceEngine(
+//            $serializer,
+//            $gameRequest
+//        );
+
+        //var_dump($engine);
+
+        /** Call main function of engine - his contains all logic of game */
+       // $engine->run();
+
         return $this->json(
-            [
-                'status' => 1,
-            ],
+            $engine->getResult(),
             200,
             [
                 'LM-COMPONENT-HASH' => md5('dice-engine')
