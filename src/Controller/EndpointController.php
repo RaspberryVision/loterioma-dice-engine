@@ -1,33 +1,12 @@
 <?php
-/**
- * LoteriomaDiceEngine - application enabling the operation of gambling cubes.
- *
- * The application consists of a dice game engine based on a pseudo-randomity for which
- * the external RNG component is used. The application is only responsible for handling
- * the game logic and forwards its results to the Core component. Data used in the operation
- * of the application are downloaded from the DataStore component.
- *
- * See more: https://raspberryvision.github.io/loterioma-dice-engine/.
- *
- * DiceEngine - casino dice game server.
- * @see https://github.com/RaspberryVision/loterioma-dice-engine
- *
- * This code is part of the LoterioMa casino system.
- * @see https://github.com/RaspberryVision/loterioma
- *
- * Created by Rafal Malik.
- * 15:47 02.04.2020, Warsaw/Zabki - DELL
- */
 
 namespace App\Controller;
 
 use App\Engine\DiceEngine;
-use App\Model\GameRequest;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
-use Symfony\Component\Serializer\SerializerInterface;
 
 /**
  * The controller being the application access point for HTTP requests.
@@ -43,32 +22,16 @@ class EndpointController extends AbstractController
      * @param Request $request
      * @param DiceEngine $engine
      * @return JsonResponse
+     * @throws \JsonException
      */
     public function run(Request $request, DiceEngine $engine): JsonResponse
     {
-
-        if ($engine->handleRequest($request->getContent())) {
-
-            $engine->loadGame();
-
-            $engine->run();
-
-            return $this->json($engine->getResult());
+        if (!$engine->handleRequest($request->getContent())) {
+            return $this->json(['Wrong request parameters']);
         }
 
-        return $this->json(['elo']);
-
-
-        /** Dice engine instance with GameRequest object as parameter */
-//        $engine = new DiceEngine(
-//            $serializer,
-//            $gameRequest
-//        );
-
-        //var_dump($engine);
-
-        /** Call main function of engine - his contains all logic of game */
-       // $engine->run();
+        $engine->loadGame();
+        $engine->run();
 
         return $this->json(
             $engine->getResult(),

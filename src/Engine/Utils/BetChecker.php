@@ -1,27 +1,10 @@
 <?php
 
-/**
- * WinningHelper - @todo One sentence about that.
- *
- * @todo add file description
- *
- * See more: @todo add documentation link
- *
- * Engine - casino game server.
- * @see https://github.com/RaspberryVision/loterioma-engine
- *
- * This code is part of the LoterioMa casino system.
- * @see https://github.com/RaspberryVision/loterioma
- *
- * Created by Rafal Malik.
- * 23:08 21.03.2020, Warsaw/Zabki - DELL
- */
-
 namespace App\Engine\Utils;
 
+use App\Model\Bet;
 use App\Model\Round;
 use App\Model\RoundResult;
-use App\Model\Store\Dice\Bet;
 
 /**
  * Helper enabling checking if the winning conditions have been met.
@@ -39,9 +22,11 @@ class BetChecker
      */
     public function process(Round $round): Round
     {
-        foreach ($round->getBets() as $bet) {
-            if ($this->checkBet($round->getResult(), $bet)) {
-                $bet->setStatus(2);
+        if ($round->getResult()) {
+            foreach ($round->getBets() as $bet) {
+                if ($this->checkBet($round->getResult(), $bet)) {
+                    $bet->setStatus(2);
+                }
             }
         }
 
