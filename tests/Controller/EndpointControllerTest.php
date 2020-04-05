@@ -35,7 +35,7 @@ class EndpointControllerTest extends WebTestCase
 {
     private ?KernelBrowser $client;
 
-    public function setUp()
+    public function setUp(): void
     {
         $this->client = static::createClient([], [
             'HTTP_HOST' => 'localhost:10001',
@@ -102,7 +102,6 @@ class EndpointControllerTest extends WebTestCase
             'statusCode' => '405',
             'componentHash' => md5('dice-engine')
         ]];
-
     }
 
     /**
@@ -115,9 +114,68 @@ class EndpointControllerTest extends WebTestCase
      *  - `status` which is integer type,
      *  - `services` which is array type AND contains `RNG`, `Core`, `DataStore` with status 0
      *
+     * @dataProvider providerTestStatus
+     * @param array $testCase
      */
-    public function testStatus()
+    public function testStatus(array $testCase): void
     {
+        // Make HTTP request to endpoint
+        $this->client->request($testCase['method'], '/endpoint/status');
 
+        // Check that response status code is expected
+        $this->assertEquals($testCase['statusCode'], $this->client->getResponse()->getStatusCode());
+
+        // Check that response content type is application/json
+        $this->assertEquals(
+            'application/json',
+            $this->client->getResponse()->headers->get('Content-Type')
+        );
+
+        // Check that headers contains valid network component hash
+        $this->assertEquals(
+            $testCase['componentHash'],
+            $this->client->getResponse()->headers->get('LM-COMPONENT-HASH')
+        );
+
+        // Check that response content contains key status
+        $this->assertArrayHasKey(
+            'status',
+            json_encode($this->client->getResponse()->getContent(), true)
+        );
+
+        // Check that response content contains key services
+        $this->assertArrayHasKey(
+            'services',
+            json_encode($this->client->getResponse()->getContent(), true)
+        );
+    }
+
+    /**
+     * DataProvider for testRun method.
+     *
+     * @return \Generator
+     */
+    public function providerTestStatus(): ?\Generator
+    {
+        yield [[
+            'method' => 'POST',
+            'statusCode' => '405',
+            'componentHash' => md5('dice-engine')
+        ]];
+        yield [[
+            'method' => 'GET',
+            'statusCode' => '200',
+            'componentHash' => md5('dice-engine')
+        ]];
+        yield [[
+            'method' => 'PUT',
+            'statusCode' => '405',
+            'componentHash' => md5('dice-engine')
+        ]];
+        yield [[
+            'method' => 'PATH',
+            'statusCode' => '405',
+            'componentHash' => md5('dice-engine')
+        ]];
     }
 }
