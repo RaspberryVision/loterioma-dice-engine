@@ -31,16 +31,16 @@ class RNGHelper extends AbstractNetworkHelper
 
     /**
      * Method returns
-     * @param GeneratorConfig $generatorConfig
+     * @param string $generatorConfigJson
      * @return NetworkResponseInterface
      */
-    public function throwDice(GeneratorConfig $generatorConfig): NetworkResponseInterface
+    public function throwDice(string $generatorConfigJson): NetworkResponseInterface
     {
         $networkRequest = new NetworkRequest(
             '/index.php/generate',
             'POST',
             'asdasd',
-            $generatorConfig
+            $generatorConfigJson
         );
 
         return $this->makeRequest($networkRequest);
