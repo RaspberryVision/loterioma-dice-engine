@@ -21,6 +21,15 @@
 
 namespace App\Engine;
 
+use App\Engine\Utils\BetChecker;
+use App\Model\Game;
+use App\Model\GameRequest;
+use App\NetworkHelper\Core\CoreHelper;
+use App\NetworkHelper\DataStore\DataStoreHelper;
+use App\NetworkHelper\RNG\RNGHelper;
+use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
+use Symfony\Component\Serializer\SerializerInterface;
+
 /**
  * Implementation of the cube game engine using a random number generator.
  * @category   Engine
@@ -30,5 +39,103 @@ namespace App\Engine;
  */
 class DiceEngine
 {
+    /**
+     * @var Game|object $game
+     */
+    private Object $game;
 
+    /**
+     * @var GameRequest|object $request
+     */
+    private Object $request;
+
+    /**
+     * @var RNGHelper $RNGHelper
+     */
+    private RNGHelper $RNGHelper;
+
+    /**
+     * @var CoreHelper $coreHelper
+     */
+    private CoreHelper $coreHelper;
+
+    /**
+     * @var DataStoreHelper $dataStoreHelper
+     */
+    private DataStoreHelper $dataStoreHelper;
+
+    /**
+     * @var BetChecker $betChecker
+     */
+    private BetChecker $betChecker;
+
+    /**
+     * @var SerializerInterface $serializer
+     */
+    private SerializerInterface $serializer;
+
+    /**
+     * DiceEngine constructor.
+     * @param SerializerInterface $serializer
+     * @param RNGHelper $RNGhelper
+     */
+    public function __construct(
+        SerializerInterface $serializer,
+        RNGHelper $RNGhelper,
+        CoreHelper $coreHelper,
+        DataStoreHelper $dataStoreHelper
+    )
+    {
+        $this->serializer = $serializer;
+        $this->RNGHelper = $RNGhelper;
+        $this->coreHelper = $coreHelper;
+        $this->dataStoreHelper = $dataStoreHelper;
+        $this->betChecker = new BetChecker();
+    }
+
+    public function handleRequest(string $requestContent): bool
+    {
+        try {
+            $this->request = $this->serializer->deserialize($requestContent, GameRequest::class, 'json');
+            return true;
+        } catch (BadRequestHttpException $exception) {
+            return false;
+        }
+    }
+
+    /**
+     * The function that supports the game logic is called when the game is drawn (the game takes place).
+     */
+    public function run(): bool
+    {
+        return true;
+    }
+
+    /**
+     * A method that returns the result of a round.
+     */
+    public function getResult()
+    {
+        return 'resukt';
+    }
+
+    /**
+     * Load the game configuration into the engine.
+     * Return true on success, otherwise return false.
+     * @return bool
+     */
+    public function loadGame(): bool
+    {
+        $this->game =  $this->serializer->deserialize(
+            $this->dataStoreHelper->fetchGame($this->request->getGameId())->getBody(),
+            Game::class,
+            'json'
+        );
+
+        if (!$this->game->getGeneratorConfig()) {
+            return false;
+        }
+
+        return true;
+    }
 }
