@@ -21,6 +21,7 @@
 
 namespace App\Tests\Controller;
 
+use Symfony\Bundle\FrameworkBundle\KernelBrowser;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 
 /**
@@ -32,16 +33,75 @@ use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
  */
 class EndpointControllerTest extends WebTestCase
 {
+    private ?KernelBrowser $client;
+
+    public function setUp()
+    {
+        $this->client = static::createClient([], [
+            'HTTP_HOST' => 'localhost:10001',
+        ]);
+    }
+
     /**
      * Test for HTTP action `http://localhost:10001/index.php/endpoint/run`.
      * Checking:
      * - route is available,
      * - route is available only for POST method,
      * - action return json format,
+     * - response has header LM-COMPONENT-HASH = md5(dice-engine)
      * - route required params is content.
+     *
+     * @dataProvider providerTestRun
+     * @param array $testCase
      */
-    public function testRun()
+    public function testRun(array $testCase): void
     {
+        // Make HTTP request to endpoint
+        $this->client->request($testCase['method'], '/endpoint/run');
+
+        // Check that response status code is expected
+        $this->assertEquals($testCase['statusCode'], $this->client->getResponse()->getStatusCode());
+
+        // Check that response content type is application/json
+        $this->assertEquals(
+            'application/json',
+            $this->client->getResponse()->headers->get('Content-Type')
+        );
+
+        // Check that headers contains valid network component hash
+        $this->assertEquals(
+            $testCase['componentHash'],
+            $this->client->getResponse()->headers->get('LM-COMPONENT-HASH')
+        );
+    }
+
+    /**
+     * DataProvider for testRun method.
+     *
+     * @return \Generator
+     */
+    public function providerTestRun(): ?\Generator
+    {
+        yield [[
+            'method' => 'POST',
+            'statusCode' => '200',
+            'componentHash' => md5('dice-engine')
+        ]];
+        yield [[
+            'method' => 'GET',
+            'statusCode' => '405',
+            'componentHash' => md5('dice-engine')
+        ]];
+        yield [[
+            'method' => 'PUT',
+            'statusCode' => '405',
+            'componentHash' => md5('dice-engine')
+        ]];
+        yield [[
+            'method' => 'PATH',
+            'statusCode' => '405',
+            'componentHash' => md5('dice-engine')
+        ]];
 
     }
 
