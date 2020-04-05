@@ -1,0 +1,40 @@
+version: '3.5'
+services:
+    loterioma_dice_engine:
+        build: .docker/php
+        container_name: loterioma_dice_engine
+        stdin_open: true
+        tty: true
+        ports:
+          - 10001:80
+        environment:
+          - APACHE_DOCUMENT_ROOT=/var/www/html/public
+        volumes:
+          - .:/var/www/html
+        networks:
+          - my-proxy-net
+
+    loterioma_dice_engine_qa:
+        build: .docker/phpqa
+        container_name: loterioma_dice_engine_qa
+        stdin_open: true
+        tty: true
+        environment:
+          - PHPQA_HOME_DIR=/phpqa
+          - PHPQA_CODE_DIR=${PHPQA_HOME_DIR}/code
+          - PHPQA_LOGS_DIR=${PHPQA_HOME_DIR}/logs
+          - PHPQA_TEST_DIR=${PHPQA_HOME_DIR}/code
+          - PHPQA_ENGINEER_HOST=loterioma_engineer
+          - PHPQA_ENGINEER_PORT=80
+          - PHPQA_MACHINE_NAME=dev-local-rm
+          - PHPQA_COMPONENT_NAME=dice-engine
+        volumes:
+          - ./src:/code
+          - ./.docker/phpqa/results:/phpqa/logs
+        networks:
+          - my-proxy-net
+
+networks:
+    my-proxy-net:
+        external: true
+        name: loterioma-net
