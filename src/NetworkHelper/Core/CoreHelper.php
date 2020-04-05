@@ -5,6 +5,7 @@ namespace App\NetworkHelper\Core;
 use App\Model\Network\NetworkRequest;
 use App\Model\Network\NetworkRequestInterface;
 use App\Model\Network\NetworkResponseInterface;
+use App\Model\Round;
 use App\NetworkHelper\AbstractNetworkHelper;
 
 /**
