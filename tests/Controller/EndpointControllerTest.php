@@ -37,9 +37,7 @@ class EndpointControllerTest extends WebTestCase
 
     public function setUp(): void
     {
-        $this->client = static::createClient([], [
-            'HTTP_HOST' => 'localhost:10001',
-        ]);
+        $this->client = static::createClient([], []);
     }
 
     /**
@@ -63,9 +61,12 @@ class EndpointControllerTest extends WebTestCase
         $this->assertEquals($testCase['statusCode'], $this->client->getResponse()->getStatusCode());
 
         // Check that response content type is application/json
-        $this->assertEquals(
-            'application/json',
-            $this->client->getResponse()->headers->get('Content-Type')
+        $this->assertTrue(
+            $this->client->getResponse()->headers->contains(
+                'Content-Type',
+                'application/json'
+            ),
+            'the "Content-Type" header is "application/json"'
         );
 
         // Check that headers contains valid network component hash
@@ -120,7 +121,7 @@ class EndpointControllerTest extends WebTestCase
     public function testStatus(array $testCase): void
     {
         // Make HTTP request to endpoint
-        $this->client->request($testCase['method'], '/endpoint/status');
+        $this->client->request($testCase['method'], '/status');
 
         // Check that response status code is expected
         $this->assertEquals($testCase['statusCode'], $this->client->getResponse()->getStatusCode());
