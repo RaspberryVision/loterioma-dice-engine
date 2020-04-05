@@ -2,8 +2,6 @@
 
 namespace App\Model;
 
-use App\Model\Store\Dice\Bet;
-
 /**
  * Object representing one game of dice.
  * @category   Model
@@ -14,14 +12,14 @@ use App\Model\Store\Dice\Bet;
 class Round
 {
     /**
-     * @var int
+     * @var int|null
      */
-    private int $id;
+    private ?int $id;
 
     /**
-     * @var int
+     * @var Game|null
      */
-    private ?int $game;
+    private ?Game $game;
 
     /**
      * @var RoundResult
@@ -29,42 +27,82 @@ class Round
     private ?RoundResult $result;
 
     /**
-     * @var Bet[]
+     * @var Bet[]|null
      */
-    private array $bets;
+    private ?array $bets;
 
     /**
-     * @var array
+     * @var array|null
      */
-    private array $parameters = [];
+    private ?array $parameters;
 
-    public function __construct()
+    /**
+     * Round constructor.
+     * @param Game $game
+     * @param RoundResult|null $result
+     * @param array|null $parameters
+     */
+    public function __construct(
+        Game $game,
+        array $parameters = null,
+        RoundResult $result = null
+    )
     {
-
+        $this->id = null;
+        $this->game = $game;
+        $this->parameters = $parameters;
+        $this->result = $result;
     }
 
+    /**
+     * @return int|null
+     */
     public function getId(): ?int
     {
         return $this->id;
     }
 
-    public function getGame(): ?int
+    /**
+     * @param int $id
+     * @return Round
+     */
+    public function setId(int $id): Round
+    {
+        $this->id = $id;
+        return $this;
+    }
+
+    /**
+     * @return Game|null
+     */
+    public function getGame(): ?Game
     {
         return $this->game;
     }
 
-    public function setGame(?int $game): self
+    /**
+     * @param Game|null $game
+     * @return $this
+     */
+    public function setGame(?Game $game): self
     {
         $this->game = $game;
 
         return $this;
     }
 
+    /**
+     * @return RoundResult|null
+     */
     public function getResult(): ?RoundResult
     {
         return $this->result;
     }
 
+    /**
+     * @param RoundResult|null $result
+     * @return $this
+     */
     public function setResult(?RoundResult $result): self
     {
         $this->result = $result;
@@ -80,29 +118,29 @@ class Round
         return $this->bets;
     }
 
+    /**
+     * @param Bet $bet
+     * @return $this
+     */
     public function addBet(Bet $bet): self
     {
-        if (!$this->bets->contains($bet)) {
-            $this->bets[] = $bet;
-        }
+        $this->bets[] = $bet;
 
         return $this;
     }
 
-    public function removeBet(Bet $bet): self
-    {
-        if ($this->bets->contains($bet)) {
-            $this->bets->removeElement($bet);
-        }
-
-        return $this;
-    }
-
+    /**
+     * @return array|null
+     */
     public function getParameters(): ?array
     {
         return $this->parameters;
     }
 
+    /**
+     * @param array|null $parameters
+     * @return $this
+     */
     public function setParameters(?array $parameters): self
     {
         $this->parameters = $parameters;

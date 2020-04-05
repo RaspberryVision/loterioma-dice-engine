@@ -37,7 +37,7 @@ class Game
     private GeneratorConfig $generatorConfig;
 
     /** @var array $rates */
-    private array $rates;
+    private array $rates = [];
 
     /**
      * @return int
