@@ -27,7 +27,7 @@ use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 /**
  * Functional tests for EndpointController.
  * @category   WebTest
- * @package    App\Engine\PlayingDice
+ * @package    App\Tests\Controller
  * @author     Rafal Malik <rafalmalik.info@gmail.com>
  * @copyright  04.2020 Raspberry Vision
  */
@@ -43,7 +43,7 @@ class EndpointControllerTest extends WebTestCase
     }
 
     /**
-     * Test for HTTP action `http://localhost:10001/index.php/endpoint/run`.
+     * Test for HTTP action `http://localhost:10001/index.php/run`.
      * Checking:
      * - route is available,
      * - route is available only for POST method,
@@ -57,7 +57,7 @@ class EndpointControllerTest extends WebTestCase
     public function testRun(array $testCase): void
     {
         // Make HTTP request to endpoint
-        $this->client->request($testCase['method'], '/endpoint/run');
+        $this->client->request($testCase['method'], '/run');
 
         // Check that response status code is expected
         $this->assertEquals($testCase['statusCode'], $this->client->getResponse()->getStatusCode());
