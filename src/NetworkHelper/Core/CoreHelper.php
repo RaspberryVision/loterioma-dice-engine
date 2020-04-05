@@ -33,16 +33,16 @@ class CoreHelper extends AbstractNetworkHelper
 
     /**
      * Method returns
-     * @param Round $round
+     * @param string $roundJson
      * @return NetworkResponseInterface
      */
-    public function processRound(Round $round): NetworkResponseInterface
+    public function processRound(string $roundJson): NetworkResponseInterface
     {
         return $this->makeRequest(new NetworkRequest(
             '/index.php/game/',
             'POST',
             'asdasdsad',
-            $round
+            $roundJson
         ));
     }
 }
