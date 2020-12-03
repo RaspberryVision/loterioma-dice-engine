@@ -78,6 +78,9 @@
     "symfony/dependency-injection": {
         "version": "v5.0.7"
     },
+    "symfony/deprecation-contracts": {
+        "version": "v2.2.0"
+    },
     "symfony/dom-crawler": {
         "version": "v5.0.7"
     },
