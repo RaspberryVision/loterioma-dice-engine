@@ -38,24 +38,6 @@ use Symfony\Component\Routing\Annotation\Route;
 class EndpointController extends AbstractController
 {
     /**
-     * @Route("/run", name="web_endpoint_run", methods={"POST"})
-     * @param Request $request
-     * @return JsonResponse
-     */
-    public function run(Request $request): JsonResponse
-    {
-        return $this->json(
-            [
-                'status' => 1,
-            ],
-            200,
-            [
-                'LM-COMPONENT-HASH' => md5('dice-engine')
-            ]
-        );
-    }
-
-    /**
      * @Route("/play", name="web_endpoint_play")
      * @param Request $request
      * @return JsonResponse
@@ -84,35 +66,6 @@ class EndpointController extends AbstractController
         );
     }
 
-    /**
-     * @Route("/status", name="web_endpoint_status", methods={"GET"})
-     * @param Request $request
-     * @return JsonResponse
-     */
-    public function status(Request $request): JsonResponse
-    {
-        return $this->json(
-            [
-                'status' => 0,
-                'services' => [
-                    'rng' => [
-                        'status' => 0
-                    ],
-                    'core' => [
-                        'status' => 0
-                    ],
-                    'data-store' => [
-                        'status' => 0
-                    ],
-                ]
-            ],
-            200,
-            [
-                'LM-COMPONENT-HASH' => md5('dice-engine'),
-                'Content-Type' => 'application/json'
-            ]
-        );
-    }
 //
 //    /**
 //     * Process the flow of the delivered game.
