@@ -37,7 +37,9 @@ class EndpointControllerTest extends WebTestCase
 
     public function setUp(): void
     {
-        $this->client = static::createClient([], []);
+        $this->client = static::createClient([], [
+            'HTTP_HOST' => 'loterioma_dice_engine',
+        ]);
     }
 
     /**
@@ -55,7 +57,7 @@ class EndpointControllerTest extends WebTestCase
     public function testRun(array $testCase): void
     {
         // Make HTTP request to endpoint
-        $this->client->request($testCase['method'], '/run');
+        $this->client->request($testCase['method'], '/play');
 
         // Check that response status code is expected
         $this->assertEquals($testCase['statusCode'], $this->client->getResponse()->getStatusCode());
@@ -120,78 +122,78 @@ class EndpointControllerTest extends WebTestCase
      * @dataProvider providerTestStatus
      * @param array $testCase
      */
-    public function testStatus(array $testCase): void
-    {
-        // Make HTTP request to endpoint
-        $this->client->request($testCase['method'], '/status');
-
-        // Check that response status code is expected
-        $this->assertEquals($testCase['statusCode'], $this->client->getResponse()->getStatusCode());
-
-        if (200 === $testCase['statusCode']) {
-            // Check that response content type is application/json
-            $this->assertTrue(
-                $this->client->getResponse()->headers->contains(
-                    'Content-Type',
-                    'application/json'
-                ),
-                'the "Content-Type" header is "application/json"'
-            );
-
-            // Check that headers contains valid network component hash
-            $this->assertEquals(
-                $testCase['componentHash'],
-                $this->client->getResponse()->headers->get('LM-COMPONENT-HASH')
-            );
-
-            // Check that response is the same as expected
-            $this->assertEquals(
-                    json_encode($testCase['response']),
-                    $this->client->getResponse()->getContent()
-            );
-        }
-    }
-
-    /**
-     * DataProvider for testRun method.
-     *
-     * @return \Generator
-     */
-    public function providerTestStatus(): ?\Generator
-    {
-        yield [[
-            'method' => 'POST',
-            'statusCode' => '405',
-            'componentHash' => md5('dice-engine')
-        ]];
-        yield [[
-            'method' => 'GET',
-            'statusCode' => 200,
-            'componentHash' => md5('dice-engine'),
-            'response' => [
-                'status' => 0,
-                'services' => [
-                    'rng' => [
-                        'status' => 0
-                    ],
-                    'core' => [
-                        'status' => 0
-                    ],
-                    'data-store' => [
-                        'status' => 0
-                    ],
-                ]
-            ]
-        ]];
-        yield [[
-            'method' => 'PUT',
-            'statusCode' => '405',
-            'componentHash' => md5('dice-engine')
-        ]];
-        yield [[
-            'method' => 'PATH',
-            'statusCode' => '405',
-            'componentHash' => md5('dice-engine')
-        ]];
-    }
+//    public function testStatus(array $testCase): void
+//    {
+//        // Make HTTP request to endpoint
+//        $this->client->request($testCase['method'], '/status');
+//
+//        // Check that response status code is expected
+//        $this->assertEquals($testCase['statusCode'], $this->client->getResponse()->getStatusCode());
+//
+//        if (200 === $testCase['statusCode']) {
+//            // Check that response content type is application/json
+//            $this->assertTrue(
+//                $this->client->getResponse()->headers->contains(
+//                    'Content-Type',
+//                    'application/json'
+//                ),
+//                'the "Content-Type" header is "application/json"'
+//            );
+//
+//            // Check that headers contains valid network component hash
+//            $this->assertEquals(
+//                $testCase['componentHash'],
+//                $this->client->getResponse()->headers->get('LM-COMPONENT-HASH')
+//            );
+//
+//            // Check that response is the same as expected
+//            $this->assertEquals(
+//                    json_encode($testCase['response']),
+//                    $this->client->getResponse()->getContent()
+//            );
+//        }
+//    }
+//
+//    /**
+//     * DataProvider for testRun method.
+//     *
+//     * @return \Generator
+//     */
+//    public function providerTestStatus(): ?\Generator
+//    {
+//        yield [[
+//            'method' => 'POST',
+//            'statusCode' => '405',
+//            'componentHash' => md5('dice-engine')
+//        ]];
+//        yield [[
+//            'method' => 'GET',
+//            'statusCode' => 200,
+//            'componentHash' => md5('dice-engine'),
+//            'response' => [
+//                'status' => 0,
+//                'services' => [
+//                    'rng' => [
+//                        'status' => 0
+//                    ],
+//                    'core' => [
+//                        'status' => 0
+//                    ],
+//                    'data-store' => [
+//                        'status' => 0
+//                    ],
+//                ]
+//            ]
+//        ]];
+//        yield [[
+//            'method' => 'PUT',
+//            'statusCode' => '405',
+//            'componentHash' => md5('dice-engine')
+//        ]];
+//        yield [[
+//            'method' => 'PATH',
+//            'statusCode' => '405',
+//            'componentHash' => md5('dice-engine')
+//        ]];
+//    }
 }

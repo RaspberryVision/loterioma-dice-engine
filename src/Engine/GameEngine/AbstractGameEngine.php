@@ -35,12 +35,7 @@ use App\NetworkHelper\RNG\RNGHelper;
  * @author     Rafal Malik <rafalmalik.info@gmail.com>
  * @copyright  03.2020 Raspberry Vision
  */
-abstract class AbstractGameEngine implements
-    PlayableInterface,
-    FlushableInterface,
-    WinnableInterface,
-    SimulableInterface,
-    RandomizableInterface
+abstract class AbstractGameEngine
 {
     /**
      * @var string $componentHash

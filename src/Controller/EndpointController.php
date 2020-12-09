@@ -44,6 +44,49 @@ class EndpointController extends AbstractController
      */
     public function play(Request $request): JsonResponse
     {
+        $gameObject = $dataStoreHelper->fetchGame($id);
+
+        return $this->process(
+            $request->getContent(),
+            new DiceEngine($gameObject)
+        );
+
+
+
+        $requestParameters = $this->handleRequest($requestContent);
+
+        if (!$requestParameters instanceof GameRequestInterface) {
+            return $this->json(
+                [
+                    'body' => 'Invalid request params.',
+                    'debug' => [
+                        'requestContent' => $requestContent
+                    ]
+                ]
+            );
+        }
+
+        switch ($requestParameters->getMode()) {
+            case 1:
+            case 2:
+                $gameRound = $engine->simulate(5);
+                break;
+            default:
+                $gameRound = $engine->play($requestParameters);
+        }
+
+        if (!$gameRound instanceof RoundInterface) {
+            throw new \LogicException('We got problem with determine game mode.');
+        }
+
+        $engine->flush($gameRound);
+
+        return $this->json(
+            [
+                'body' => $gameRound->printInfo(),
+            ]
+        );
+
         $gameRound = new DiceRound(
             $this->game,
             new DiceResultState($this->RNGHelper->random()),
@@ -66,51 +109,51 @@ class EndpointController extends AbstractController
         );
     }
 
-//
-//    /**
-//     * Process the flow of the delivered game.
-//     * @param string $requestContent
-//     * @param AbstractGameEngine $engine
-//     * @return JsonResponse
-//     */
-//    protected function process(string $requestContent, AbstractGameEngine $engine): JsonResponse
-//    {
-//        $requestParameters = $this->handleRequest($requestContent);
-//
-//        if (!$requestParameters instanceof GameRequestInterface) {
-//            return $this->json(
-//                [
-//                    'body' => 'Invalid request params.',
-//                    'debug' => [
-//                        'requestContent' => $requestContent
-//                    ]
-//                ]
-//            );
-//        }
-//
-//        switch ($requestParameters->getMode()) {
-//            case 1:
-//            case 2:
-//                $gameRound = $engine->simulate(5);
-//                break;
-//            default:
-//                $gameRound = $engine->play($requestParameters);
-//        }
-//
-//        if (!$gameRound instanceof RoundInterface) {
-//            throw new \LogicException('We got problem with determine game mode.');
-//        }
-//
-//        $engine->flush($gameRound);
-//
-//        return $this->json(
-//            [
-//                'body' => $gameRound->printInfo(),
-//            ]
-//        );
-//    }
-//
-//
+
+    /**
+     * Process the flow of the delivered game.
+     * @param string $requestContent
+     * @param AbstractGameEngine $engine
+     * @return JsonResponse
+     */
+    protected function process(string $requestContent, AbstractGameEngine $engine): JsonResponse
+    {
+        $requestParameters = $this->handleRequest($requestContent);
+
+        if (!$requestParameters instanceof GameRequestInterface) {
+            return $this->json(
+                [
+                    'body' => 'Invalid request params.',
+                    'debug' => [
+                        'requestContent' => $requestContent
+                    ]
+                ]
+            );
+        }
+
+        switch ($requestParameters->getMode()) {
+            case 1:
+            case 2:
+                $gameRound = $engine->simulate(5);
+                break;
+            default:
+                $gameRound = $engine->play($requestParameters);
+        }
+
+        if (!$gameRound instanceof RoundInterface) {
+            throw new \LogicException('We got problem with determine game mode.');
+        }
+
+        $engine->flush($gameRound);
+
+        return $this->json(
+            [
+                'body' => $gameRound->printInfo(),
+            ]
+        );
+    }
+
+
 //    /**
 //     * Fetch request parameters, an incorrect format error is also handled.
 //     * @param string $jsonData

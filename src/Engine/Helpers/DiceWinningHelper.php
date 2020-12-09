@@ -36,34 +36,5 @@ use App\Model\Round\SlotsRound;
  */
 class DiceWinningHelper extends AbstractWinningHelper
 {
-    /**
-     * The process of analyzing opportunities for winners.
-     * @param AbstractRound $round
-     * @return AbstractRound
-     */
-    public function checkWinnings(DiceRound $round): RoundInterface
-    {
-        // Default round is lost.
-        $round->setStatus(AbstractRound::STATUS_LOST);
 
-        /** @var DiceBet $bet */
-        foreach ($round->getBets() as $bet) {
-            if ($this->checkBet($round->getResult(), $bet)) {
-                $round->getResult()->addMatched($bet);
-                $round->setStatus(AbstractRound::STATUS_WON);
-            }
-        }
-
-        return $round;
-    }
-
-    /**
-     * @param DiceResultState $matrix
-     * @param DiceBet $bet
-     * @return bool
-     */
-    private function checkBet(DiceResultState $matrix, DiceBet $bet): bool
-    {
-        return $bet->getNumber() === $matrix->getValue(0, 0);
-    }
 }
