@@ -103,7 +103,8 @@ abstract class AbstractNetworkHelper
             curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($networkRequest->getRequestParams()));
         } elseif (is_string($networkRequest->getRequestParams())) {
             curl_setopt($ch, CURLOPT_POSTFIELDS, $networkRequest->getRequestParams());
-        } elseif (null !== $networkRequest->getRequestParams()) {
+            } elseif (null !== $networkRequest->getRequestParams()) {
+                var_dump($networkRequest->getRequestParams());
             throw new LogicException('Wrong format data');
         }
 
