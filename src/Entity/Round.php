@@ -3,6 +3,8 @@
 namespace App\Entity;
 
 use App\Repository\RoundRepository;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
@@ -22,6 +24,26 @@ class Round
      */
     private $status;
 
+    /**
+     * @ORM\OneToMany(targetEntity=Bet::class, mappedBy="round")
+     */
+    private $bets;
+
+    /**
+     * @ORM\Column(type="float")
+     */
+    private $balance;
+
+    /**
+     * @ORM\OneToOne(targetEntity=ResultState::class, cascade={"persist", "remove"})
+     */
+    private $result;
+
+    public function __construct()
+    {
+        $this->bets = new ArrayCollection();
+    }
+
     public function getId(): ?int
     {
         return $this->id;
@@ -35,6 +57,60 @@ class Round
     public function setStatus(int $status): self
     {
         $this->status = $status;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection|Bet[]
+     */
+    public function getBets(): Collection
+    {
+        return $this->bets;
+    }
+
+    public function addBet(Bet $bet): self
+    {
+        if (!$this->bets->contains($bet)) {
+            $this->bets[] = $bet;
+            $bet->setRound($this);
+        }
+
+        return $this;
+    }
+
+    public function removeBet(Bet $bet): self
+    {
+        if ($this->bets->removeElement($bet)) {
+            // set the owning side to null (unless already changed)
+            if ($bet->getRound() === $this) {
+                $bet->setRound(null);
+            }
+        }
+
+        return $this;
+    }
+
+    public function getBalance(): ?float
+    {
+        return $this->balance;
+    }
+
+    public function setBalance(float $balance): self
+    {
+        $this->balance = $balance;
+
+        return $this;
+    }
+
+    public function getResult(): ?ResultState
+    {
+        return $this->result;
+    }
+
+    public function setResult(?ResultState $result): self
+    {
+        $this->result = $result;
 
         return $this;
     }
