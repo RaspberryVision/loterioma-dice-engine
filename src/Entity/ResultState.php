@@ -29,8 +29,9 @@ class ResultState
      */
     private $wonBets;
 
-    public function __construct()
+    public function __construct(?array $matrix = [])
     {
+        $this->matrix = $matrix;
         $this->wonBets = new ArrayCollection();
     }
 

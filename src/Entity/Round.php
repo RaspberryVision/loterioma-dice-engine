@@ -45,9 +45,11 @@ class Round
      */
     private $game;
 
-    public function __construct()
+    public function __construct(Game $game, array $bets, ResultState $resultState = null)
     {
-        $this->bets = new ArrayCollection();
+        $this->game = $game;
+        $this->result = $resultState;
+        $this->bets = new ArrayCollection($bets);
     }
 
     public function getId(): ?int
