@@ -32,6 +32,11 @@ class Bet
      */
     private $resultState;
 
+    /**
+     * @ORM\Column(type="smallint")
+     */
+    private $status;
+
     public function getId(): ?int
     {
         return $this->id;
@@ -69,6 +74,18 @@ class Bet
     public function setResultState(?ResultState $resultState): self
     {
         $this->resultState = $resultState;
+
+        return $this;
+    }
+
+    public function getStatus(): ?int
+    {
+        return $this->status;
+    }
+
+    public function setStatus(int $status): self
+    {
+        $this->status = $status;
 
         return $this;
     }
