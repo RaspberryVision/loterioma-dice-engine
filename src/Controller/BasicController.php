@@ -53,15 +53,12 @@ class BasicController extends AbstractController
         if (!$gameObject) {
             // @todo response error
         }
-        var_dump(json_decode($request->getContent())        );exit();
 
         $gameRound = $engine->play($gameObject, json_decode($request->getContent(), true));
 
-        $engine->flush($gameRound);
-
         return $this->json(
             [
-                'body' => $gameRound->printInfo(),
+                'body' => $gameRound->getStatus(),
             ]
         );
 
