@@ -39,6 +39,12 @@ class Round
      */
     private $result;
 
+    /**
+     * @ORM\OneToOne(targetEntity=Game::class, cascade={"persist", "remove"})
+     * @ORM\JoinColumn(nullable=false)
+     */
+    private $game;
+
     public function __construct()
     {
         $this->bets = new ArrayCollection();
@@ -111,6 +117,18 @@ class Round
     public function setResult(?ResultState $result): self
     {
         $this->result = $result;
+
+        return $this;
+    }
+
+    public function getGame(): ?Game
+    {
+        return $this->game;
+    }
+
+    public function setGame(Game $game): self
+    {
+        $this->game = $game;
 
         return $this;
     }
