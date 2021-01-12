@@ -27,6 +27,11 @@ class Bet
      */
     private $round;
 
+    /**
+     * @ORM\ManyToOne(targetEntity=ResultState::class, inversedBy="wonBets")
+     */
+    private $resultState;
+
     public function getId(): ?int
     {
         return $this->id;
@@ -52,6 +57,18 @@ class Bet
     public function setRound(?Round $round): self
     {
         $this->round = $round;
+
+        return $this;
+    }
+
+    public function getResultState(): ?ResultState
+    {
+        return $this->resultState;
+    }
+
+    public function setResultState(?ResultState $resultState): self
+    {
+        $this->resultState = $resultState;
 
         return $this;
     }

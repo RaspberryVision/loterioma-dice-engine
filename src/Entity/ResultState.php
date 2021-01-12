@@ -3,6 +3,8 @@
 namespace App\Entity;
 
 use App\Repository\ResultStateRepository;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
@@ -22,6 +24,16 @@ class ResultState
      */
     private $matrix = [];
 
+    /**
+     * @ORM\OneToMany(targetEntity=Bet::class, mappedBy="resultState")
+     */
+    private $wonBets;
+
+    public function __construct()
+    {
+        $this->wonBets = new ArrayCollection();
+    }
+
     public function getId(): ?int
     {
         return $this->id;
@@ -35,6 +47,36 @@ class ResultState
     public function setMatrix(?array $matrix): self
     {
         $this->matrix = $matrix;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection|Bet[]
+     */
+    public function getWonBets(): Collection
+    {
+        return $this->wonBets;
+    }
+
+    public function addWonBet(Bet $wonBet): self
+    {
+        if (!$this->wonBets->contains($wonBet)) {
+            $this->wonBets[] = $wonBet;
+            $wonBet->setResultState($this);
+        }
+
+        return $this;
+    }
+
+    public function removeWonBet(Bet $wonBet): self
+    {
+        if ($this->wonBets->removeElement($wonBet)) {
+            // set the owning side to null (unless already changed)
+            if ($wonBet->getResultState() === $this) {
+                $wonBet->setResultState(null);
+            }
+        }
 
         return $this;
     }
