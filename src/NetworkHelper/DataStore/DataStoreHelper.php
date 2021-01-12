@@ -13,12 +13,9 @@
 
 namespace App\NetworkHelper\DataStore;
 
-use App\Model\DTO\Network\NetworkRequest;
-use App\Model\DTO\Network\NetworkRequestInterface;
-use App\Model\DTO\Network\NetworkResponseInterface;
-use App\Model\Game\AbstractGame;
-use App\Model\Game\DiceGame;
-use App\Model\Game\GameInterface;
+use App\DTO\Network\NetworkRequest;
+use App\DTO\Network\NetworkRequestInterface;
+use App\DTO\Network\NetworkResponseInterface;
 use App\NetworkHelper\AbstractNetworkHelper;
 use App\NetworkHelper\ModelBuilder;
 

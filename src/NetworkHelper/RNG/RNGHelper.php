@@ -12,10 +12,9 @@
 
 namespace App\NetworkHelper\RNG;
 
-use App\Model\DTO\Game\GeneratorConfig;
-use App\Model\DTO\Network\NetworkRequest;
-use App\Model\DTO\Network\NetworkRequestInterface;
-use App\Model\DTO\Network\NetworkResponseInterface;
+use App\DTO\GeneratorConfig;
+use App\DTO\Network\NetworkRequest;
+use App\DTO\Network\NetworkResponseInterface;
 use App\NetworkHelper\AbstractNetworkHelper;
 
 /**
@@ -53,7 +52,7 @@ class RNGHelper extends AbstractNetworkHelper
             '/index.php/generate',
             'POST',
             'asdasd',
-            $this->generatorConfig
+            json_encode($this->generatorConfig)
         );
 
         return $this->makeRequest($networkRequest);
