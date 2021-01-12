@@ -89,4 +89,9 @@ class GeneratorConfig
 
         return $this;
     }
+
+    public function dto()
+    {
+        return new \App\Model\DTO\Game\GeneratorConfig($this->seed, $this->min, $this->max, $this->format);
+    }
 }
