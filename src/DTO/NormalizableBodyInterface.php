@@ -17,7 +17,7 @@
  * 17:42 21.03.2020, Warsaw/Zabki - DELL
  */
 
-namespace App\Model\DTO;
+namespace App\DTO;
 
 interface NormalizableBodyInterface
 {

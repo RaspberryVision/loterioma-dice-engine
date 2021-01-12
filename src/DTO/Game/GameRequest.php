@@ -10,9 +10,9 @@
  * @copyright  03.2020 Raspberry Vision
  */
 
-namespace App\Model\DTO\Game;
+namespace App\DTO\Game;
 
-use App\Model\DTO\JsonInitializableInterface;
+use App\DTO\JsonInitializableInterface;
 
 /**
  * Object for game play action params.

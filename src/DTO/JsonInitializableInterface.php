@@ -17,7 +17,7 @@
  * 21:08 22.03.2020, Warsaw/Zabki - DELL
  */
 
-namespace App\Model\DTO;
+namespace App\DTO;
 
 /**
  * An interface that specifies the class's ability to initialize its properties with json objects

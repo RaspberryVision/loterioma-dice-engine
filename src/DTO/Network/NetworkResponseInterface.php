@@ -6,7 +6,7 @@
  * Time: 19:07
  */
 
-namespace App\Model\DTO\Network;
+namespace App\DTO\Network;
 
 interface NetworkResponseInterface
 {

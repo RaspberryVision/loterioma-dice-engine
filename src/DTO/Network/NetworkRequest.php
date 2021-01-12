@@ -10,7 +10,7 @@
  * @copyright  03.2020 Raspberry Vision
  */
 
-namespace App\Model\DTO\Network;
+namespace App\DTO\Network;
 
 class NetworkRequest implements NetworkRequestInterface
 {

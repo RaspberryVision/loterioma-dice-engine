@@ -17,7 +17,7 @@
  * 21:13 22.03.2020, Warsaw/Zabki - DELL
  */
 
-namespace App\Model\DTO\Game;
+namespace App\DTO\Game;
 
 /**
  * @todo Short description

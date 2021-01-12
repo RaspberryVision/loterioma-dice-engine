@@ -10,7 +10,7 @@
  * @copyright  03.2020 Raspberry Vision
  */
 
-namespace App\Model\DTO;
+namespace App\DTO;
 
 class GeneratorConfig implements NormalizableBodyInterface
 {
