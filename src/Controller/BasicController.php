@@ -21,6 +21,7 @@
 
 namespace App\Controller;
 
+use App\Engine\DiceEngine;
 use App\Model\ResultState\DiceResultState;
 use App\Model\Round\DiceRound;
 use App\Repository\GameRepository;
@@ -40,55 +41,21 @@ use Symfony\Component\Routing\Annotation\Route;
 class BasicController extends AbstractController
 {
     /**
-     * @Route("/play", name="web_endpoint_play")
+     * @Route("/play", name="base_endpoint_play")
      * @param Request $request
      * @param GameRepository $gameRepository
      * @return JsonResponse
      */
-    public function play(Request $request, GameRepository $gameRepository): JsonResponse
+    public function play(Request $request, GameRepository $gameRepository, DiceEngine $engine): JsonResponse
     {
-        $gameObject = $gameRepository->find($request->get('id'));
+        $gameObject = $gameRepository->find($request->get('id', -1));
 
-        return $this->process(
-            $request->getContent(),
-            new DiceEngine($gameObject)
-        );
-    }
-
-
-    /**
-     * Process the flow of the delivered game.
-     * @param string $requestContent
-     * @param AbstractGameEngine $engine
-     * @return JsonResponse
-     */
-    protected function process(string $requestContent, AbstractGameEngine $engine): JsonResponse
-    {
-        $requestParameters = $this->handleRequest($requestContent);
-
-        if (!$requestParameters instanceof GameRequestInterface) {
-            return $this->json(
-                [
-                    'body' => 'Invalid request params.',
-                    'debug' => [
-                        'requestContent' => $requestContent
-                    ]
-                ]
-            );
+        if (!$gameObject) {
+            // @todo response error
         }
+        var_dump(json_decode($request->getContent())        );exit();
 
-        switch ($requestParameters->getMode()) {
-            case 1:
-            case 2:
-                $gameRound = $engine->simulate(5);
-                break;
-            default:
-                $gameRound = $engine->play($requestParameters);
-        }
-
-        if (!$gameRound instanceof RoundInterface) {
-            throw new \LogicException('We got problem with determine game mode.');
-        }
+        $gameRound = $engine->play($gameObject, json_decode($request->getContent(), true));
 
         $engine->flush($gameRound);
 
@@ -97,45 +64,8 @@ class BasicController extends AbstractController
                 'body' => $gameRound->printInfo(),
             ]
         );
+
     }
 
 
-//    /**
-//     * Fetch request parameters, an incorrect format error is also handled.
-//     * @param string $jsonData
-//     * @return GameRequestInterface|false
-//     */
-//    protected function handleRequest(string $jsonData)
-//    {
-//        try {
-//            return $this->createGameRequest($jsonData);
-//        } catch (\Exception $exception) {
-//            return false;
-//        }
-//    }
-//
-//    /**
-//     * @Route("/play/{id}", name="dice_play")
-//     * @param int $id
-//     * @param Request $request
-//     * @param DataStoreHelper $dataStoreHelper
-//     * @return JsonResponse
-//     */
-//    public function play(int $id, Request $request, DataStoreHelper $dataStoreHelper): JsonResponse
-//    {
-//        $gameObject = $dataStoreHelper->fetchGame($id);
-//
-//        return $this->process(
-//            $request->getContent(),
-//            new DiceEngine($gameObject)
-//        );
-//    }
-//
-//    /**
-//     * @inheritDoc
-//     */
-//    public function createGameRequest($jsonData): DicePlayRequest
-//    {
-//        return new DicePlayRequest($jsonData);
-//    }
 }
