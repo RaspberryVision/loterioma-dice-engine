@@ -12,7 +12,7 @@
 
 namespace App\NetworkHelper\RNG;
 
-use App\Model\DTO\Game\GeneratorConfig;
+use App\Entity\GeneratorConfig;
 use App\Model\DTO\Network\NetworkRequest;
 use App\Model\DTO\Network\NetworkRequestInterface;
 use App\Model\DTO\Network\NetworkResponseInterface;
@@ -32,6 +32,7 @@ class RNGHelper extends AbstractNetworkHelper
 
     /**
      * RNGHelper constructor.
+     * @param GeneratorConfig $generatorConfig
      */
     public function __construct(GeneratorConfig $generatorConfig)
     {
