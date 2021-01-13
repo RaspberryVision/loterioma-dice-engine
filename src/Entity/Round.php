@@ -50,6 +50,7 @@ class Round
         $this->game = $game;
         $this->result = $resultState;
         $this->bets = new ArrayCollection($bets);
+        $this->status = 0;
     }
 
     public function getId(): ?int

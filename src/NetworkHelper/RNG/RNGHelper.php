@@ -49,10 +49,10 @@ class RNGHelper extends AbstractNetworkHelper
     public function random(): NetworkResponseInterface
     {
         $networkRequest = new NetworkRequest(
-            '/index.php/generate',
+            '/generate',
             'POST',
             'asdasd',
-            json_encode($this->generatorConfig)
+            json_encode($this->generatorConfig->normalizeBody())
         );
 
         return $this->makeRequest($networkRequest);

@@ -14,8 +14,14 @@ class DiceEngine
     public function play(Game $game, $requestData)
     {
         $gameRound = new Round($game, $requestData['parameters']['bets']);
-        $rngValues = (new RNGHelper($game->getGeneratorConfig()->dto()))->random();
+        $rngHelper = new RNGHelper($game->getGeneratorConfig()->dto());
+
+        var_dump($rngHelper->random());exit();
         $gameRound->setResult(new ResultState($rngValues->getBody()));
+
+        var_dump($rngValues);
+
+        var_dump($gameRound->getStatus());
 
 //        $this->winning($gameRound);
 //        $this->flush($gameRound);
