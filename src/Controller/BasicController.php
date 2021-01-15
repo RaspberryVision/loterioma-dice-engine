@@ -44,6 +44,7 @@ class BasicController extends AbstractController
      * @Route("/play", name="base_endpoint_play")
      * @param Request $request
      * @param GameRepository $gameRepository
+     * @param DiceEngine $engine
      * @return JsonResponse
      */
     public function play(Request $request, GameRepository $gameRepository, DiceEngine $engine): JsonResponse
@@ -58,10 +59,9 @@ class BasicController extends AbstractController
 
         return $this->json(
             [
-                'body' => $gameRound->getStatus(),
+                'body' => $gameRound->printInfo(),
             ]
         );
-
     }
 
 

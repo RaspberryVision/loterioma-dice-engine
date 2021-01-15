@@ -125,8 +125,6 @@ abstract class AbstractNetworkHelper
             );
         }
 
-        var_dump($response);exit();
-
         curl_close($ch);
 
         return $this->createResponse($response);

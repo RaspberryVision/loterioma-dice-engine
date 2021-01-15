@@ -135,4 +135,13 @@ class Round
 
         return $this;
     }
+
+    public function printInfo(): array
+    {
+        return [
+            'result' => $this->result->getMatrix(),
+            'status' => $this->status,
+            'matched' => $this->getResult()->printMatched()
+        ];
+    }
 }

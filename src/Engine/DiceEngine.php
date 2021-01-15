@@ -16,12 +16,7 @@ class DiceEngine
         $gameRound = new Round($game, $requestData['parameters']['bets']);
         $rngHelper = new RNGHelper($game->getGeneratorConfig()->dto());
 
-        var_dump($rngHelper->random());exit();
-        $gameRound->setResult(new ResultState($rngValues->getBody()));
-
-        var_dump($rngValues);
-
-        var_dump($gameRound->getStatus());
+        $gameRound->setResult(new ResultState($rngHelper->random()->getBody()));
 
 //        $this->winning($gameRound);
 //        $this->flush($gameRound);

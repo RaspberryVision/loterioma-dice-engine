@@ -81,4 +81,16 @@ class ResultState
 
         return $this;
     }
+
+    public function printMatched()
+    {
+        $results = [];
+        foreach ($this->getWonBets() as $item) {
+            $results[] = [
+                'rate' => $item->getRate(),
+                'number' => $item->getNumber()
+            ];
+        }
+        return $results;
+    }
 }
