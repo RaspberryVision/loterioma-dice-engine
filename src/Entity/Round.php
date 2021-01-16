@@ -151,6 +151,7 @@ class Round
      */
     private function setBets($bets)
     {
+        $this->bets = new ArrayCollection();
         foreach ($bets as $bet) {
             $this->addBet(new Bet(
                 $bet['number'],
