@@ -78,13 +78,13 @@ class BasicController extends AbstractController
     public function checkWinnings(Round $round)
     {
         // Default round is lost.
-        $round->setStatus(2 );
+        $round->setStatus(1 );
 
         /** @var Bet $bet */
         foreach ($round->getBets() as $bet) {
             if ($this->checkBet($round->getResult(), $bet)) {
                 $round->getResult()->addWonBet($bet);
-                $round->setStatus(3);
+                $round->setStatus(2);
             }
         }
 
