@@ -22,6 +22,9 @@
 namespace App\Controller;
 
 use App\Engine\DiceEngine;
+use App\Entity\Bet;
+use App\Entity\ResultState;
+use App\Entity\Round;
 use App\Model\ResultState\DiceResultState;
 use App\Model\Round\DiceRound;
 use App\Repository\GameRepository;
@@ -57,6 +60,8 @@ class BasicController extends AbstractController
 
         $gameRound = $engine->play($gameObject, json_decode($request->getContent(), true));
 
+        $this->checkWinnings($gameRound);
+
         return $this->json(
             [
                 'body' => $gameRound->printInfo(),
@@ -64,5 +69,36 @@ class BasicController extends AbstractController
         );
     }
 
+
+    /**
+     * The process of analyzing opportunities for winners.
+     * @param AbstractRound $round
+     * @return AbstractRound
+     */
+    public function checkWinnings(Round $round)
+    {
+        // Default round is lost.
+        $round->setStatus(2 );
+
+        /** @var Bet $bet */
+        foreach ($round->getBets() as $bet) {
+            if ($this->checkBet($round->getResult(), $bet)) {
+                $round->getResult()->addWonBet($bet);
+                $round->setStatus(3);
+            }
+        }
+
+        return $round;
+    }
+
+    /**
+     * @param ResultState $matrix
+     * @param Bet $bet
+     * @return bool
+     */
+    private function checkBet(ResultState $resultState, Bet $bet): bool
+    {
+        return $bet->getNumber() === $resultState->getValue(0, 0);
+    }
 
 }

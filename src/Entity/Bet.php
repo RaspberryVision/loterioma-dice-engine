@@ -47,10 +47,10 @@ class Bet
      * @param $rate
      * @param $number
      */
-    public function __construct(float $rate, int $number)
+    public function __construct(int $number, float $rate)
     {
-        $this->rate = $rate;
         $this->number = $number;
+        $this->rate = $rate;
     }
 
     public function getId(): ?int

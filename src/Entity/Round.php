@@ -49,8 +49,8 @@ class Round
     {
         $this->game = $game;
         $this->result = $resultState;
-        $this->bets = new ArrayCollection($bets);
         $this->status = 0;
+        $this->setBets($bets);
     }
 
     public function getId(): ?int
@@ -73,7 +73,7 @@ class Round
     /**
      * @return Collection|Bet[]
      */
-    public function getBets(): Collection
+    public function getBets()
     {
         return $this->bets;
     }
@@ -143,5 +143,19 @@ class Round
             'status' => $this->status,
             'matched' => $this->getResult()->printMatched()
         ];
+    }
+
+    /**
+     * @param $bets
+     * @todo Short description
+     */
+    private function setBets($bets)
+    {
+        foreach ($bets as $bet) {
+            $this->addBet(new Bet(
+                $bet['number'],
+                $bet['amount']
+            ));
+        }
     }
 }
