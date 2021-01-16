@@ -93,4 +93,15 @@ class ResultState
         }
         return $results;
     }
+
+    /**
+     * Get the value of a specific matrix cell.
+     * @param int $x
+     * @param int $y
+     * @return int
+     */
+    public function getValue(int $x, int $y): int
+    {
+        return $this->matrix[$x][$y] ?? -1;
+    }
 }
