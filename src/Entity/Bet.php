@@ -37,6 +37,22 @@ class Bet
      */
     private $status;
 
+    /**
+     * @ORM\Column(type="integer")
+     */
+    private $number;
+
+    /**
+     * Bet constructor.
+     * @param $rate
+     * @param $number
+     */
+    public function __construct(float $rate, int $number)
+    {
+        $this->rate = $rate;
+        $this->number = $number;
+    }
+
     public function getId(): ?int
     {
         return $this->id;
@@ -86,6 +102,18 @@ class Bet
     public function setStatus(int $status): self
     {
         $this->status = $status;
+
+        return $this;
+    }
+
+    public function getNumber(): ?int
+    {
+        return $this->number;
+    }
+
+    public function setNumber(int $number): self
+    {
+        $this->number = $number;
 
         return $this;
     }
