@@ -28,6 +28,7 @@ use App\Entity\Round;
 use App\Model\ResultState\DiceResultState;
 use App\Model\Round\DiceRound;
 use App\Repository\GameRepository;
+use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -50,7 +51,7 @@ class BasicController extends AbstractController
      * @param DiceEngine $engine
      * @return JsonResponse
      */
-    public function play(Request $request, GameRepository $gameRepository, DiceEngine $engine): JsonResponse
+    public function play(Request $request, GameRepository $gameRepository, DiceEngine $engine, EntityManagerInterface $entityManager): JsonResponse
     {
         $gameObject = $gameRepository->find($request->get('id', -1));
 
@@ -61,6 +62,9 @@ class BasicController extends AbstractController
         $gameRound = $engine->play($gameObject, json_decode($request->getContent(), true));
 
         $this->checkWinnings($gameRound);
+
+        $entityManager->persist($gameRound);
+        $entityManager->flush();
 
         return $this->json(
             [
