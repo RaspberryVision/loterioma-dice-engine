@@ -35,7 +35,7 @@ class Bet
     /**
      * @ORM\Column(type="smallint")
      */
-    private $status;
+    private $status = 0;
 
     /**
      * @ORM\Column(type="integer")

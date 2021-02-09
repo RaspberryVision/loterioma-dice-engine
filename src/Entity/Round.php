@@ -25,14 +25,14 @@ class Round
     private $status;
 
     /**
-     * @ORM\OneToMany(targetEntity=Bet::class, mappedBy="round")
+     * @ORM\OneToMany(targetEntity=Bet::class, mappedBy="round", cascade={"PERSIST"})
      */
     private $bets;
 
     /**
      * @ORM\Column(type="float")
      */
-    private $balance;
+    private $balance = 0;
 
     /**
      * @ORM\OneToOne(targetEntity=ResultState::class, cascade={"persist", "remove"})

@@ -25,7 +25,7 @@ class ResultState
     private $matrix = [];
 
     /**
-     * @ORM\OneToMany(targetEntity=Bet::class, mappedBy="resultState")
+     * @ORM\OneToMany(targetEntity=Bet::class, mappedBy="resultState", cascade={"PERSIST"})
      */
     private $wonBets;
 
