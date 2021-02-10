@@ -40,14 +40,20 @@ class Round
     private $result;
 
     /**
-     * @ORM\OneToOne(targetEntity=Game::class, cascade={"persist", "remove"})
+     * @ORM\Column(type="string", length=255)
+     */
+    private $user;
+
+    /**
+     * @ORM\ManyToOne(targetEntity=Game::class)
      * @ORM\JoinColumn(nullable=false)
      */
     private $game;
 
-    public function __construct(Game $game, array $bets, ResultState $resultState = null)
+    public function __construct(Game $game, string $user, array $bets, ResultState $resultState = null)
     {
         $this->game = $game;
+        $this->user = $user;
         $this->result = $resultState;
         $this->status = 0;
         $this->setBets($bets);
@@ -124,18 +130,6 @@ class Round
         return $this;
     }
 
-    public function getGame(): ?Game
-    {
-        return $this->game;
-    }
-
-    public function setGame(Game $game): self
-    {
-        $this->game = $game;
-
-        return $this;
-    }
-
     public function printInfo(): array
     {
         return [
@@ -158,5 +152,29 @@ class Round
                 $bet['amount']
             ));
         }
+    }
+
+    public function getUser(): ?string
+    {
+        return $this->user;
+    }
+
+    public function setUser(string $user): self
+    {
+        $this->user = $user;
+
+        return $this;
+    }
+
+    public function getGame(): ?Game
+    {
+        return $this->game;
+    }
+
+    public function setGame(?Game $game): self
+    {
+        $this->game = $game;
+
+        return $this;
     }
 }
