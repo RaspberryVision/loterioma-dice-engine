@@ -13,7 +13,7 @@ class DiceEngine
 {
     public function play(Game $game, $requestData)
     {
-        $gameRound = new Round($game, $requestData['parameters']['bets']);
+        $gameRound = new Round($game, $requestData['userId'], $requestData['parameters']['bets']);
         $rngHelper = new RNGHelper($game->getGeneratorConfig()->dto());
 
         $gameRound->setResult(new ResultState($rngHelper->random()->getBody()));
