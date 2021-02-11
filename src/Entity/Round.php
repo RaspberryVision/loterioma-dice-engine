@@ -50,6 +50,11 @@ class Round
      */
     private $game;
 
+    /**
+     * @ORM\ManyToOne(targetEntity=GameSession::class, inversedBy="rounds")
+     */
+    private $session;
+
     public function __construct(Game $game, string $user, array $bets, ResultState $resultState = null)
     {
         $this->game = $game;
@@ -174,6 +179,18 @@ class Round
     public function setGame(?Game $game): self
     {
         $this->game = $game;
+
+        return $this;
+    }
+
+    public function getSession(): ?GameSession
+    {
+        return $this->session;
+    }
+
+    public function setSession(?GameSession $session): self
+    {
+        $this->session = $session;
 
         return $this;
     }

@@ -3,6 +3,8 @@
 namespace App\Entity;
 
 use App\Repository\GameSessionRepository;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
@@ -41,6 +43,16 @@ class GameSession
      * @ORM\Column(type="float")
      */
     private $value;
+
+    /**
+     * @ORM\OneToMany(targetEntity=Round::class, mappedBy="session")
+     */
+    private $rounds;
+
+    public function __construct()
+    {
+        $this->rounds = new ArrayCollection();
+    }
 
     public function getId(): ?int
     {
@@ -103,6 +115,36 @@ class GameSession
     public function setValue(float $value): self
     {
         $this->value = $value;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection|Round[]
+     */
+    public function getRounds(): Collection
+    {
+        return $this->rounds;
+    }
+
+    public function addRound(Round $round): self
+    {
+        if (!$this->rounds->contains($round)) {
+            $this->rounds[] = $round;
+            $round->setSession($this);
+        }
+
+        return $this;
+    }
+
+    public function removeRound(Round $round): self
+    {
+        if ($this->rounds->removeElement($round)) {
+            // set the owning side to null (unless already changed)
+            if ($round->getSession() === $this) {
+                $round->setSession(null);
+            }
+        }
 
         return $this;
     }
