@@ -23,6 +23,7 @@ namespace App\Controller;
 
 use App\Engine\DiceEngine;
 use App\Entity\Bet;
+use App\Entity\GameSession;
 use App\Entity\ResultState;
 use App\Entity\Round;
 use App\Model\ResultState\DiceResultState;
@@ -73,6 +74,27 @@ class BasicController extends AbstractController
         );
     }
 
+    /**
+     * @Route("/session", name="base_endpoint_session")
+     */
+    public function createSession(Request $request, GameRepository $gameRepository, EntityManagerInterface $entityManager)
+    {
+        $gameObject = $gameRepository->find($request->get('id', -1));
+
+        $session = new GameSession();
+        $session->setValue(100)
+            ->setToken(uniqid())
+            ->setGame($gameObject)
+            ->setCreatedAt(new \DateTime());
+
+        $entityManager->persist($session);
+        $entityManager->flush();
+
+        return $this->json([
+            'sessionId' => $session->getToken(),
+            'amount' => $session->getValue()
+        ]);
+    }
 
     /**
      * The process of analyzing opportunities for winners.
