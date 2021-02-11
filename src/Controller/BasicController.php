@@ -29,6 +29,7 @@ use App\Entity\Round;
 use App\Model\ResultState\DiceResultState;
 use App\Model\Round\DiceRound;
 use App\Repository\GameRepository;
+use App\Repository\GameSessionRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -52,16 +53,26 @@ class BasicController extends AbstractController
      * @param DiceEngine $engine
      * @return JsonResponse
      */
-    public function play(Request $request, GameRepository $gameRepository, DiceEngine $engine, EntityManagerInterface $entityManager): JsonResponse
-    {
+    public function play(
+        Request $request,
+        GameSessionRepository $sessionRepository,
+        GameRepository $gameRepository,
+        DiceEngine $engine,
+        EntityManagerInterface $entityManager
+    ): JsonResponse {
         $gameObject = $gameRepository->find($request->get('id', -1));
 
         if (!$gameObject) {
             // @todo response error
         }
 
-        $gameRound = $engine->play($gameObject, json_decode($request->getContent(), true));
+        $data = json_decode($request->getContent(), true);
 
+        $gameRound = $engine->play($gameObject, $data);
+
+        $session = $sessionRepository->findOneBy(['token' => $data['sessionId']]);
+
+        $gameRound->setSession($session);
         $this->checkWinnings($gameRound);
 
         $entityManager->persist($gameRound);
@@ -77,8 +88,11 @@ class BasicController extends AbstractController
     /**
      * @Route("/session", name="base_endpoint_session")
      */
-    public function createSession(Request $request, GameRepository $gameRepository, EntityManagerInterface $entityManager)
-    {
+    public function createSession(
+        Request $request,
+        GameRepository $gameRepository,
+        EntityManagerInterface $entityManager
+    ) {
         $gameObject = $gameRepository->find($request->get('id', -1));
 
         $session = new GameSession();
@@ -90,10 +104,12 @@ class BasicController extends AbstractController
         $entityManager->persist($session);
         $entityManager->flush();
 
-        return $this->json([
-            'sessionId' => $session->getToken(),
-            'amount' => $session->getValue()
-        ]);
+        return $this->json(
+            [
+                'sessionId' => $session->getToken(),
+                'amount' => $session->getValue(),
+            ]
+        );
     }
 
     /**
@@ -104,13 +120,16 @@ class BasicController extends AbstractController
     public function checkWinnings(Round $round)
     {
         // Default round is lost.
-        $round->setStatus(1 );
+        $round->setStatus(1);
 
         /** @var Bet $bet */
         foreach ($round->getBets() as $bet) {
             if ($this->checkBet($round->getResult(), $bet)) {
                 $round->getResult()->addWonBet($bet);
                 $round->setStatus(2);
+                $round->getSession()->setValue(
+                    $round->getSession()->getValue() + $this->calculateWin()
+                );
             }
         }
 
@@ -125,6 +144,11 @@ class BasicController extends AbstractController
     private function checkBet(ResultState $resultState, Bet $bet): bool
     {
         return $bet->getNumber() === $resultState->getValue(0, 0);
+    }
+
+    private function calculateWin()
+    {
+        return 20;
     }
 
 }

@@ -140,7 +140,9 @@ class Round
         return [
             'result' => $this->result->getMatrix(),
             'status' => $this->status,
-            'matched' => $this->getResult()->printMatched()
+            'matched' => $this->getResult()->printMatched(),
+            'amount' => $this->session->getValue(),
+            'sessionId' => $this->session->getToken()
         ];
     }
 
