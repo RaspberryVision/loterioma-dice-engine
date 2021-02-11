@@ -28,6 +28,7 @@ use App\Entity\ResultState;
 use App\Entity\Round;
 use App\Model\ResultState\DiceResultState;
 use App\Model\Round\DiceRound;
+use App\NetworkHelper\Cashier\CashierHelper;
 use App\Repository\GameRepository;
 use App\Repository\GameSessionRepository;
 use Doctrine\ORM\EntityManagerInterface;
@@ -93,6 +94,12 @@ class BasicController extends AbstractController
         GameRepository $gameRepository,
         EntityManagerInterface $entityManager
     ) {
+        // Check that cashier is ok
+        $cashier = new CashierHelper();
+        $cashier->payIn([
+            'amount' => 100
+        ]);
+
         $gameObject = $gameRepository->find($request->get('id', -1));
 
         $session = new GameSession();
@@ -124,6 +131,9 @@ class BasicController extends AbstractController
 
         /** @var Bet $bet */
         foreach ($round->getBets() as $bet) {
+            $round->getSession()->setValue(
+                $round->getSession()->getValue() - $bet->getRate()
+            );
             if ($this->checkBet($round->getResult(), $bet)) {
                 $round->getResult()->addWonBet($bet);
                 $round->setStatus(2);

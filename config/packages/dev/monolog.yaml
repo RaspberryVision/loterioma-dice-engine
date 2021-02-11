@@ -1,0 +1,13 @@
+monolog:
+  handlers:
+    stdout:
+      type: stream
+      path: 'php://stdout'
+      level: debug
+      channels: [ '!event' ]
+      # (Optional) format logs to json
+      #formatter: monolog.formatter.json
+    stderr:
+      type: stream
+      path: 'php://stderr'
+      level: error
