@@ -32,6 +32,7 @@ use App\NetworkHelper\Cashier\CashierHelper;
 use App\Repository\GameRepository;
 use App\Repository\GameSessionRepository;
 use Doctrine\ORM\EntityManagerInterface;
+use Psr\Log\LoggerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -92,13 +93,15 @@ class BasicController extends AbstractController
     public function createSession(
         Request $request,
         GameRepository $gameRepository,
-        EntityManagerInterface $entityManager
+        EntityManagerInterface $entityManager,
+        LoggerInterface $logger
     ) {
         // Check that cashier is ok
         $cashier = new CashierHelper();
-        $cashier->payIn([
+        $response = $cashier->payIn([
             'amount' => 100
         ]);
+        $logger->info(json_encode($response->getBody()));
 
         $gameObject = $gameRepository->find($request->get('id', -1));
 
