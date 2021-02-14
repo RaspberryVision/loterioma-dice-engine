@@ -96,17 +96,27 @@ class BasicController extends AbstractController
         EntityManagerInterface $entityManager,
         LoggerInterface $logger
     ) {
+        $data = json_decode($request->getContent(), true);
         // Check that cashier is ok
         $cashier = new CashierHelper();
         $response = $cashier->payIn([
-            'amount' => 100
-        ]);
-        $logger->info(json_encode($response->getBody()));
+            'amount' => $data['amount'],
+            'userId' => $data['userId'],
+            'gameId' => $data['gameId']
+        ])->getBody();
+
+        if ($response['status'] !== 0) {
+            return $this->json(
+                [
+                    'status' => $response['status']
+                ]
+            );
+        }
 
         $gameObject = $gameRepository->find($request->get('id', -1));
 
         $session = new GameSession();
-        $session->setValue(100)
+        $session->setValue($data['amount'])
             ->setToken(uniqid())
             ->setGame($gameObject)
             ->setCreatedAt(new \DateTime());
