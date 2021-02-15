@@ -115,11 +115,19 @@ class BasicController extends AbstractController
 
         $gameObject = $gameRepository->find($request->get('id', -1));
 
-        $session = new GameSession();
-        $session->setValue($data['amount'])
-            ->setToken(uniqid())
-            ->setGame($gameObject)
-            ->setCreatedAt(new \DateTime());
+        if (!isset($data['sessionId'])) {
+            $session = new GameSession();
+            $session->setValue($data['amount'])
+                ->setToken(uniqid())
+                ->setGame($gameObject)
+                ->setCreatedAt(new \DateTime());
+        } else {
+            $session = $entityManager->getRepository(GameSession::class)->findOneBy([
+                'token' => $data['sessionId']
+            ]);
+
+            $session->setValue($session->getValue() + $data['amount']);
+        }
 
         $entityManager->persist($session);
         $entityManager->flush();
@@ -128,6 +136,7 @@ class BasicController extends AbstractController
             [
                 'sessionId' => $session->getToken(),
                 'amount' => $session->getValue(),
+                'wallet' => $response['wallet']
             ]
         );
     }
