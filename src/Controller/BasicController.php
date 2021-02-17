@@ -134,6 +134,7 @@ class BasicController extends AbstractController
 
         return $this->json(
             [
+                'status' => 0,
                 'sessionId' => $session->getToken(),
                 'amount' => $session->getValue(),
                 'wallet' => $response['wallet']
